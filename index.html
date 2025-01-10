@@ -25,6 +25,28 @@
   <script>
     // Check if Apple Pay is available
     if (window.ApplePaySession && ApplePaySession.canMakePayments()) {
+
+
+
+    var promise = ApplePaySession.applePayCapabilities(merchantIdentifier);
+    promise.then(function(capabilities) {
+      // Check if the person has an active payment credential provisioned in Wallet.
+      switch (capabilities.paymentCredentialStatus) {
+        case "paymentCredentialsAvailable":
+            alert("paymentCredentialsAvailable")
+          // Display an Apple Pay button and offer Apple Pay as the primary payment option. 
+        case "paymentCredentialStatusUnknown":
+        alert("paymentCredentialStatusUnknown")
+          // Display an Apple Pay button and offer Apple Pay as a payment option.
+        case "paymentCredentialsUnavailable":
+        alert("paymentCredentialsUnavailable")
+          // Consider displaying an Apple Pay button.
+        case "applePayUnsupported":
+        alert("applePayUnsupported")
+          // Don't show an Apple Pay button or offer Apple Pay.
+      }
+    })
+
       console.log('Apple Pay is available!');
       document.getElementById('apple-pay-button').addEventListener('click', startApplePaySession);
     } else {
@@ -39,7 +61,7 @@
         supportedNetworks: ['visa', 'masterCard', 'amex'], // Card networks
         merchantCapabilities: ['supports3DS'], // Capabilities
         total: {
-          label: 'Your Store Name',
+          label: 'Paybito',
           amount: '10.00' // Example amount
         }
       };
