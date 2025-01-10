@@ -26,29 +26,33 @@
     // Check if Apple Pay is available
     if (window.ApplePaySession && ApplePaySession.canMakePayments()) {
 
-        var merchantIdentifier = 'merchant.com.paybito';
+      var merchantIdentifier = 'merchant.com.paybito';
 
     var promise = ApplePaySession.applePayCapabilities(merchantIdentifier);
     promise.then(function(capabilities) {
       // Check if the person has an active payment credential provisioned in Wallet.
       switch (capabilities.paymentCredentialStatus) {
         case "paymentCredentialsAvailable":
-            alert("paymentCredentialsAvailable")
+            // alert("paymentCredentialsAvailable")
+            document.getElementById('apple-pay-button').addEventListener('click', startApplePaySession);
           // Display an Apple Pay button and offer Apple Pay as the primary payment option. 
         case "paymentCredentialStatusUnknown":
-        alert("paymentCredentialStatusUnknown")
+        // alert("paymentCredentialStatusUnknown")
+        document.getElementById('apple-pay-button').addEventListener('click', startApplePaySession);
           // Display an Apple Pay button and offer Apple Pay as a payment option.
         case "paymentCredentialsUnavailable":
-        alert("paymentCredentialsUnavailable")
+        // alert("paymentCredentialsUnavailable")
+        document.getElementById('apple-pay-button').addEventListener('click', startApplePaySession);
           // Consider displaying an Apple Pay button.
         case "applePayUnsupported":
         alert("applePayUnsupported")
+        document.getElementById('apple-pay-button').style.display = 'none';
           // Don't show an Apple Pay button or offer Apple Pay.
       }
     })
 
       console.log('Apple Pay is available!');
-      document.getElementById('apple-pay-button').addEventListener('click', startApplePaySession);
+     // document.getElementById('apple-pay-button').addEventListener('click', startApplePaySession);
     } else {
       console.error('Apple Pay is not supported on this device.');
       document.getElementById('apple-pay-button').style.display = 'none';
