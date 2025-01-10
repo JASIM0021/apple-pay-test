@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apple Pay Button Example</title>
+  <style>
+    .apple-pay-button {
+      -webkit-appearance: -apple-pay-button;
+      -apple-pay-button-type: buy;
+      height: 50px;
+      width: 200px;
+      border-radius: 5px;
+    }
+  </style>
+  <script crossorigin
+        src="https://applepay.cdn-apple.com/jsapi/1.latest/apple-pay-sdk.js">
+      </script>
+</head>
+<body>
+
+  <h2>Pay with Apple Pay</h2>
+  <button id="apple-pay-button" class="apple-pay-button"></button>
+
+  <script>
+    // Check if Apple Pay is available
+    if (window.ApplePaySession && ApplePaySession.canMakePayments()) {
+      console.log('Apple Pay is available!');
+      document.getElementById('apple-pay-button').addEventListener('click', startApplePaySession);
+    } else {
+      console.error('Apple Pay is not supported on this device.');
+      document.getElementById('apple-pay-button').style.display = 'none';
+    }
+
+    function startApplePaySession() {
+      const paymentRequest = {
+        countryCode: 'US', // Your country code
+        currencyCode: 'USD', // Your currency
+        supportedNetworks: ['visa', 'masterCard', 'amex'], // Card networks
+        merchantCapabilities: ['supports3DS'], // Capabilities
+        total: {
+          label: 'Your Store Name',
+          amount: '10.00' // Example amount
+        }
+      };
+
+      const session = new ApplePaySession(3, paymentRequest);
+
+      // Merchant validation
+      session.onvalidatemerchant = (event) => {
+        fetch('/validate-merchant', {
+          method: 'POST',
+          body: JSON.stringify({ validationURL: event.validationURL }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(data => session.completeMerchantValidation(data))
+        .catch(error => console.error('Merchant validation failed:', error));
+      };
+
+      // Payment authorized
+      session.onpaymentauthorized = (event) => {
+        // Process the payment
+        console.log('Payment authorized:', event.payment);
+        session.completePayment({ status: ApplePaySession.STATUS_SUCCESS });
+        alert('Payment successful!');
+      };
+
+      session.oncancel = () => {
+        console.log('Payment was cancelled by the user.');
+      };
+
+      session.begin();
+    }
+  </script>
+
+</body>
+</html>
