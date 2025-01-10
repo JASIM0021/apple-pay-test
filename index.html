@@ -26,65 +26,74 @@
     // Check if Apple Pay is available
     if (window.ApplePaySession && ApplePaySession.canMakePayments()) {
 
-      var merchantIdentifier = 'merchant.com.paybito';
+    //     var merchantIdentifier = 'merchant.com.paybito';
 
-    var promise = ApplePaySession.applePayCapabilities(merchantIdentifier);
-    promise.then(function(capabilities) {
-      // Check if the person has an active payment credential provisioned in Wallet.
-      switch (capabilities.paymentCredentialStatus) {
-        case "paymentCredentialsAvailable":
-            // alert("paymentCredentialsAvailable")
-            document.getElementById('apple-pay-button').addEventListener('click', startApplePaySession);
-          // Display an Apple Pay button and offer Apple Pay as the primary payment option. 
-        case "paymentCredentialStatusUnknown":
-        // alert("paymentCredentialStatusUnknown")
-        document.getElementById('apple-pay-button').addEventListener('click', startApplePaySession);
-          // Display an Apple Pay button and offer Apple Pay as a payment option.
-        case "paymentCredentialsUnavailable":
-        // alert("paymentCredentialsUnavailable")
-        document.getElementById('apple-pay-button').addEventListener('click', startApplePaySession);
-          // Consider displaying an Apple Pay button.
-        case "applePayUnsupported":
-        alert("applePayUnsupported")
-        document.getElementById('apple-pay-button').style.display = 'none';
-          // Don't show an Apple Pay button or offer Apple Pay.
-      }
-    })
+    // var promise = ApplePaySession.applePayCapabilities(merchantIdentifier);
+    // promise.then(function(capabilities) {
+    //   // Check if the person has an active payment credential provisioned in Wallet.
+    //   switch (capabilities.paymentCredentialStatus) {
+    //     case "paymentCredentialsAvailable":
+    //         alert("paymentCredentialsAvailable")
+    //       // Display an Apple Pay button and offer Apple Pay as the primary payment option. 
+    //     case "paymentCredentialStatusUnknown":
+    //     alert("paymentCredentialStatusUnknown")
+    //       // Display an Apple Pay button and offer Apple Pay as a payment option.
+    //     case "paymentCredentialsUnavailable":
+    //     alert("paymentCredentialsUnavailable")
+    //       // Consider displaying an Apple Pay button.
+    //     case "applePayUnsupported":
+    //     alert("applePayUnsupported")
+    //       // Don't show an Apple Pay button or offer Apple Pay.
+    //   }
+    // })
 
       console.log('Apple Pay is available!');
-     // document.getElementById('apple-pay-button').addEventListener('click', startApplePaySession);
+      document.getElementById('apple-pay-button').addEventListener('click', startApplePaySession);
     } else {
       console.error('Apple Pay is not supported on this device.');
       document.getElementById('apple-pay-button').style.display = 'none';
     }
 
-    function startApplePaySession() {
-      const paymentRequest = {
-        countryCode: 'US', // Your country code
-        currencyCode: 'USD', // Your currency
-        supportedNetworks: ['visa', 'masterCard', 'amex'], // Card networks
-        merchantCapabilities: ['supports3DS'], // Capabilities
-        total: {
-          label: 'Paybito',
-          amount: '10.00' // Example amount
-        }
-      };
+//     {
+//     merchantIdentifier: "merchant.com.example.mystore",
+//     displayName: "MyStore",
+//     initiative: "web",
+//     initiativeContext: "mystore.example.com"
+// }
 
+    function startApplePaySession() {
+  const paymentRequest = {
+  countryCode: 'US', // Your country code
+  currencyCode: 'USD', // Your currency
+  supportedNetworks: ['visa', 'masterCard', 'amex'], // Card networks
+  merchantCapabilities: ['supports3DS', 'supportsCredit', 'supportsDebit'], // Capabilities
+  total: {
+    label: 'Paybito',
+    amount: '10.00' // Example amount
+  },
+  // Add metadata to indicate this is a recurring payment (handled by your backend)
+  paymentRequestMetadata: {
+    recurringPayment: true, // Indicates that the payment is recurring
+    paymentDescription: 'Subscription for Paybito', // Description of what the recurring payment is for
+    subscriptionPeriod: 'monthly', // The subscription period (could be 'weekly', 'monthly', 'annually', etc.)
+    nextPaymentAmount: '10.00' // Amount for the next payment
+  }
+};
       const session = new ApplePaySession(3, paymentRequest);
 
       // Merchant validation
-      session.onvalidatemerchant = (event) => {
-        fetch('/validate-merchant', {
-          method: 'POST',
-          body: JSON.stringify({ validationURL: event.validationURL }),
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-        .then(response => response.json())
-        .then(data => session.completeMerchantValidation(data))
-        .catch(error => console.error('Merchant validation failed:', error));
-      };
+      // session.onvalidatemerchant = (event) => {
+      //   fetch('/validate-merchant', {
+      //     method: 'POST',
+      //     body: JSON.stringify({ validationURL: event.validationURL }),
+      //     headers: {
+      //       'Content-Type': 'application/json'
+      //     }
+      //   })
+      //   .then(response => response.json())
+      //   .then(data => session.completeMerchantValidation(data))
+      //   .catch(error => console.error('Merchant validation failed:', error));
+      // };
 
       // Payment authorized
       session.onpaymentauthorized = (event) => {
@@ -97,6 +106,8 @@
       session.oncancel = () => {
         console.log('Payment was cancelled by the user.');
       };
+
+      // session.completePayment({ status: ApplePaySession.STATUS_FAILURE });
 
       session.begin();
     }
