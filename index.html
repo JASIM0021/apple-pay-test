@@ -69,41 +69,50 @@
   merchantCapabilities: ['supports3DS', 'supportsCredit', 'supportsDebit'], // Capabilities
   total: {
     label: 'Paybito',
-    amount: '10.00' // Example amount
+    amount: '1.00' // Example amount
   },
   // Add metadata to indicate this is a recurring payment (handled by your backend)
   paymentRequestMetadata: {
     recurringPayment: true, // Indicates that the payment is recurring
     paymentDescription: 'Subscription for Paybito', // Description of what the recurring payment is for
     subscriptionPeriod: 'monthly', // The subscription period (could be 'weekly', 'monthly', 'annually', etc.)
-    nextPaymentAmount: '10.00' // Amount for the next payment
+    nextPaymentAmount: '1.00' // Amount for the next payment
   }
 };
       const session = new ApplePaySession(3, paymentRequest);
 
       // Merchant validation
-      // session.onvalidatemerchant = (event) => {
-      //   fetch('/validate-merchant', {
-      //     method: 'POST',
-      //     body: JSON.stringify({ validationURL: event.validationURL }),
-      //     headers: {
-      //       'Content-Type': 'application/json'
-      //     }
-      //   })
-      //   .then(response => response.json())
-      //   .then(data => session.completeMerchantValidation(data))
-      //   .catch(error => console.error('Merchant validation failed:', error));
-      // };
+     session.onvalidatemerchant = (event) => {
+
+      console.log(event,"event")
+
+      console.log(event.validationURL,"event.validationURL")
+       fetch('https://api.paybito.com:9443/ApplePay/api/apple-pay/createPaymentSession', {
+          method: 'POST',
+         body: JSON.stringify({ validationURL: event.validationURL }),
+         headers: {
+           'Content-Type': 'application/json'
+         }
+       })
+       .then(response => response.json())
+       .then(data =>{
+        console.log(data,"data")
+        session.completeMerchantValidation(data)
+       })
+       .catch(error => console.error('Merchant validation failed:', error));
+     };
 
       // Payment authorized
       session.onpaymentauthorized = (event) => {
+        console.log("event",event)
         // Process the payment
         console.log('Payment authorized:', event.payment);
         session.completePayment({ status: ApplePaySession.STATUS_SUCCESS });
         alert('Payment successful!');
       };
 
-      session.oncancel = () => {
+      session.oncancel = (event) => {
+        console.log("event",event)
         console.log('Payment was cancelled by the user.');
       };
 
