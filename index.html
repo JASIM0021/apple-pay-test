@@ -62,23 +62,60 @@
 // }
 
     function startApplePaySession() {
-  const paymentRequest = {
-  countryCode: 'US', // Your country code
-  currencyCode: 'USD', // Your currency
-  supportedNetworks: ['visa', 'masterCard', 'amex'], // Card networks
-  merchantCapabilities: ['supports3DS', 'supportsCredit', 'supportsDebit'], // Capabilities
-  total: {
-    label: 'Paybito',
-    amount: '10.0' // Example amount
-  },
-  // Add metadata to indicate this is a recurring payment (handled by your backend)
-  paymentRequestMetadata: {
-    recurringPayment: true, // Indicates that the payment is recurring
-    paymentDescription: 'Subscription for Paybito', // Description of what the recurring payment is for
-    subscriptionPeriod: 'monthly', // The subscription period (could be 'weekly', 'monthly', 'annually', etc.)
-    nextPaymentAmount: '1.00' // Amount for the next payment
-  }
-};
+//   const paymentRequest = {
+//   countryCode: 'US', // Your country code
+//   currencyCode: 'USD', // Your currency
+//   supportedNetworks: ['visa', 'masterCard', 'amex'], // Card networks
+//   merchantCapabilities: ['supports3DS', 'supportsCredit', 'supportsDebit'], // Capabilities
+//   total: {
+//     label: 'Paybito',
+//     amount: '10.0' // Example amount
+//   },
+//   // Add metadata to indicate this is a recurring payment (handled by your backend)
+//   paymentRequestMetadata: {
+//     recurringPayment: true, // Indicates that the payment is recurring
+//     paymentDescription: 'Subscription for Paybito', // Description of what the recurring payment is for
+//     subscriptionPeriod: 'monthly', // The subscription period (could be 'weekly', 'monthly', 'annually', etc.)
+//     nextPaymentAmount: '1.00' // Amount for the next payment
+//   }
+// };
+
+
+const paymentRequest = {
+		countryCode: 'US',
+		currencyCode: 'USD',
+		shippingMethods: [
+			{
+				label: 'Free Shipping',
+				amount: '0.00',
+				identifier: 'free',
+				detail: 'Delivers in five business days',
+			},
+			{
+				label: 'Express Shipping',
+				amount: '5.00',
+				identifier: 'express',
+				detail: 'Delivers in two business days',
+			},
+		],
+
+		lineItems: [
+			{
+				label: 'Shipping',
+				amount: '0.00',
+			}
+		],
+
+		total: {
+			label: 'Apple Pay Example',
+			amount: '8.99',
+		},
+
+		supportedNetworks:[ 'amex', 'discover', 'masterCard', 'visa'],
+		merchantCapabilities: [ 'supports3DS' ],
+
+		requiredShippingContactFields: [ 'postalAddress', 'email' ],
+	};
       const session = new ApplePaySession(3, paymentRequest);
 
       // Merchant validation
