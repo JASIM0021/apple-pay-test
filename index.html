@@ -119,31 +119,40 @@ const paymentRequest = {
       const session = new ApplePaySession(3, paymentRequest);
 
       // Merchant validation
-     session.onvalidatemerchant = (event) => {
+    //  session.onvalidatemerchant = (event) => {
 
-      console.log(event,"event")
+    //   console.log(event,"event")
 
-      console.log(event.validationURL,"event.validationURL")
-       fetch('https://api.paybito.com:9443/ApplePay/api/apple-pay/createPaymentSession', {
-          method: 'POST',
-         body: JSON.stringify({ validationURL: event.validationURL }),
-         headers: {
-           'Content-Type': 'application/json'
-         }
-       })
-       .then(response => response.json())
-       .then(data =>{
-        if (data && data.merchantSessionIdentifier) {
-      session.completeMerchantValidation(data);
-    } else {
-      console.error("Invalid merchant session data:", data);
-    }
-        console.log(data,"data")
-        // session.completeMerchantValidation(data)
-       })
-       .catch(error => console.error('Merchant validation failed:', error));
-     };
+    //   console.log(event.validationURL,"event.validationURL")
+    //    fetch('https://api.paybito.com:9443/ApplePay/api/apple-pay/createPaymentSession', {
+    //       method: 'POST',
+    //      body: JSON.stringify({ validationURL: event.validationURL }),
+    //      headers: {
+    //        'Content-Type': 'application/json'
+    //      }
+    //    })
+    //    .then(response => response.json())
+    //    .then(data =>{
+    //     if (data && data.merchantSessionIdentifier) {
+    //   session.completeMerchantValidation(data);
+    // } else {
+    //   console.error("Invalid merchant session data:", data);
+    // }
+    //     console.log(data,"data")
+    //     // session.completeMerchantValidation(data)
+    //    })
+    //    .catch(error => console.error('Merchant validation failed:', error));
+    //  };
 
+
+    session.onvalidatemerchant = (event) => {
+		console.log("Validate merchant");
+		const validationURL = event.validationURL;
+		getApplePaySession(event.validationURL).then(function(response) {
+  			console.log(response);
+  			session.completeMerchantValidation(response);
+		});
+	};
       // Payment authorized
       session.onpaymentauthorized = (event) => {
         console.log("event",event)
