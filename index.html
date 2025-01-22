@@ -257,7 +257,7 @@
         const serverResponse = await fetch("https://api.paybito.com:9443/ApplePay/api/braintree/process-payment", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ nonce: "asjgjhags" }),
+          body: JSON.stringify({ nonce: "asjgjhags" ,amount:"27"}),
         }).then((res) => res.json());
   
         if (serverResponse.success) {
