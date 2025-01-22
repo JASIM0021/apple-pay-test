@@ -221,7 +221,7 @@
       }
     ).then((res) => res.json()).then((data)=>{
       console.log("data",data)
-      session.completeMerchantValidation(data);
+      session.completeMerchantValidation(JSON.parse(data));
     })
  
     // console.log("Merchant Session:", );
