@@ -208,25 +208,23 @@
       const session = new ApplePaySession(3, paymentRequest);
   
       session.onvalidatemerchant = async (event) => {
-        try {
-          const merchantSession = await fetch(
-            "https://api.paybito.com:9443/ApplePay/api/apple-pay/createPaymentSessionGet",
-            {
-              method: "GET",
-              headers: { "Content-Type": "application/json" },
-              // body: JSON.stringify({ validationURL: event.validationURL }),
-            }
-          ).then((res) => res.json());
+  try {
+    const merchantSession = await fetch(
+      "https://your-server-domain.com/ApplePay/api/apple-pay/createPaymentSession",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ validationURL: event.validationURL }),
+      }
+    ).then((res) => res.json());
 
-
-          console.log(merchantSession,"merchantSession")
-  
-          session.completeMerchantValidation(merchantSession);
-        } catch (err) {
-          console.error("Merchant validation failed:", err);
-        }
-      };
-  
+    console.log("Merchant Session:", merchantSession);
+    session.completeMerchantValidation(merchantSession);
+  } catch (err) {
+    console.error("Merchant validation failed:", err);
+    session.abort();
+  }
+};
       session.onpaymentauthorized = async (event) => {
        
        
