@@ -219,7 +219,7 @@
     ).then((res) => res.json());
 
     console.log("Merchant Session:", merchantSession);
-    session.completeMerchantValidation(merchantSession);
+    // session.completeMerchantValidation(merchantSession);
   } catch (err) {
     console.error("Merchant validation failed:", err);
     session.abort();
