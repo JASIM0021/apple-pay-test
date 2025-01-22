@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,39 +14,22 @@
       border-radius: 5px;
     }
   </style>
-  <script crossorigin
-        src="https://applepay.cdn-apple.com/jsapi/1.latest/apple-pay-sdk.js">
-      </script>
+ 
+    <script src="https://js.braintreegateway.com/web/3.92.0/js/client.min.js"></script>
+<script src="https://js.braintreegateway.com/web/3.92.0/js/apple-pay.min.js"></script>
+
+  </script>
 </head>
+
 <body>
 
   <h2>Pay with Apple Pay</h2>
   <button id="apple-pay-button" class="apple-pay-button"></button>
 
-  <script>
+  <!-- <script>
     // Check if Apple Pay is available
     if (window.ApplePaySession && ApplePaySession.canMakePayments()) {
 
-    //     var merchantIdentifier = 'merchant.com.paybito';
-
-    // var promise = ApplePaySession.applePayCapabilities(merchantIdentifier);
-    // promise.then(function(capabilities) {
-    //   // Check if the person has an active payment credential provisioned in Wallet.
-    //   switch (capabilities.paymentCredentialStatus) {
-    //     case "paymentCredentialsAvailable":
-    //         alert("paymentCredentialsAvailable")
-    //       // Display an Apple Pay button and offer Apple Pay as the primary payment option. 
-    //     case "paymentCredentialStatusUnknown":
-    //     alert("paymentCredentialStatusUnknown")
-    //       // Display an Apple Pay button and offer Apple Pay as a payment option.
-    //     case "paymentCredentialsUnavailable":
-    //     alert("paymentCredentialsUnavailable")
-    //       // Consider displaying an Apple Pay button.
-    //     case "applePayUnsupported":
-    //     alert("applePayUnsupported")
-    //       // Don't show an Apple Pay button or offer Apple Pay.
-    //   }
-    // })
 
       console.log('Apple Pay is available!');
       document.getElementById('apple-pay-button').addEventListener('click', startApplePaySession);
@@ -54,116 +38,114 @@
       document.getElementById('apple-pay-button').style.display = 'none';
     }
 
-//     {
-//     merchantIdentifier: "merchant.com.example.mystore",
-//     displayName: "MyStore",
-//     initiative: "web",
-//     initiativeContext: "mystore.example.com"
-// }
+    //     {
+    //     merchantIdentifier: "merchant.com.example.mystore",
+    //     displayName: "MyStore",
+    //     initiative: "web",
+    //     initiativeContext: "mystore.example.com"
+    // }
 
     function startApplePaySession() {
-//   const paymentRequest = {
-//   countryCode: 'US', // Your country code
-//   currencyCode: 'USD', // Your currency
-//   supportedNetworks: ['visa', 'masterCard', 'amex'], // Card networks
-//   merchantCapabilities: ['supports3DS', 'supportsCredit', 'supportsDebit'], // Capabilities
-//   total: {
-//     label: 'Paybito',
-//     amount: '10.0' // Example amount
-//   },
-//   // Add metadata to indicate this is a recurring payment (handled by your backend)
-//   paymentRequestMetadata: {
-//     recurringPayment: true, // Indicates that the payment is recurring
-//     paymentDescription: 'Subscription for Paybito', // Description of what the recurring payment is for
-//     subscriptionPeriod: 'monthly', // The subscription period (could be 'weekly', 'monthly', 'annually', etc.)
-//     nextPaymentAmount: '1.00' // Amount for the next payment
-//   }
-// };
 
 
-const paymentRequest = {
-		countryCode: 'US',
-		currencyCode: 'USD',
-		shippingMethods: [
-			{
-				label: 'Free Shipping',
-				amount: '0.00',
-				identifier: 'free',
-				detail: 'Delivers in five business days',
-			},
-			{
-				label: 'Express Shipping',
-				amount: '5.00',
-				identifier: 'express',
-				detail: 'Delivers in two business days',
-			},
-		],
 
-		lineItems: [
-			{
-				label: 'Shipping',
-				amount: '0.00',
-			}
-		],
+      const paymentRequest = {
+        countryCode: 'US',
+        currencyCode: 'USD',
+        shippingMethods: [
+          {
+            label: 'Free Shipping',
+            amount: '0.00',
+            identifier: 'free',
+            detail: 'Delivers in five business days',
+          },
+          {
+            label: 'Express Shipping',
+            amount: '5.00',
+            identifier: 'express',
+            detail: 'Delivers in two business days',
+          },
+        ],
 
-		total: {
-			label: 'Apple Pay Example',
-			amount: '8.99',
-		},
+        lineItems: [
+          {
+            label: 'Shipping',
+            amount: '0.00',
+          }
+        ],
 
-		supportedNetworks:[ 'amex', 'discover', 'masterCard', 'visa'],
-		merchantCapabilities: [ 'supports3DS' ],
+        total: {
+          label: 'Apple Pay Example',
+          amount: '8.99',
+        },
 
-		requiredShippingContactFields: [ 'postalAddress', 'email' ],
-	};
+        supportedNetworks: ['amex', 'discover', 'masterCard', 'visa'],
+        merchantCapabilities: ['supports3DS'],
+
+        requiredShippingContactFields: ['postalAddress', 'email'],
+      };
       const session = new ApplePaySession(3, paymentRequest);
 
       // Merchant validation
-    //  session.onvalidatemerchant = (event) => {
+      //  session.onvalidatemerchant = (event) => {
 
-    //   console.log(event,"event")
+      //   console.log(event,"event")
 
-    //   console.log(event.validationURL,"event.validationURL")
-    //    fetch('https://api.paybito.com:9443/ApplePay/api/apple-pay/createPaymentSession', {
-    //       method: 'POST',
-    //      body: JSON.stringify({ validationURL: event.validationURL }),
-    //      headers: {
-    //        'Content-Type': 'application/json'
-    //      }
-    //    })
-    //    .then(response => response.json())
-    //    .then(data =>{
-    //     if (data && data.merchantSessionIdentifier) {
-    //   session.completeMerchantValidation(data);
-    // } else {
-    //   console.error("Invalid merchant session data:", data);
-    // }
-    //     console.log(data,"data")
-    //     // session.completeMerchantValidation(data)
-    //    })
-    //    .catch(error => console.error('Merchant validation failed:', error));
-    //  };
+      console.log(event.validationURL, "event.validationURL")
+      fetch('https://api.paybito.com:9443/ApplePay/api/apple-pay/createPaymentSession', {
+        method: 'POST',
+        body: JSON.stringify({ validationURL: event.validationURL }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data && data.merchantSessionIdentifier) {
+            console.error("Marchant Validation Done", data);
+
+            session.completeMerchantValidation(data);
+          } else {
+            console.error("Invalid merchant session data:", data);
+          }
+          console.log(data, "data")
+          // session.completeMerchantValidation(data)
+        })
+        .catch(error => console.error('Merchant validation failed:', error));
 
 
-    session.onvalidatemerchant = (event) => {
-		console.log("Validate merchant");
-		const validationURL = event.validationURL;
-		getApplePaySession(event.validationURL).then(function(response) {
-  			console.log(response);
-  			session.completeMerchantValidation(response);
-		});
-	};
+
+      //   session.onvalidatemerchant = (event) => {
+      // 	console.log("Validate merchant");
+      // 	const validationURL = event.validationURL;
+      // 	getApplePaySession(event.validationURL).then(function(response) {
+      // 			console.log(response);
+      // 			session.completeMerchantValidation(response);
+      // 	});
+      // };
+
       // Payment authorized
       session.onpaymentauthorized = (event) => {
-        console.log("event",event)
-        // Process the payment
-        console.log('Payment authorized:', event.payment);
-        session.completePayment({ status: ApplePaySession.STATUS_SUCCESS });
-        alert('Payment successful!');
-      };
+          // Send payment data to backend
+          fetch("https://api.paybito.com:9443/ApplePay/api/apple-pay/payment", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token: event.payment.token })
+          })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                session.completePayment(ApplePaySession.STATUS_SUCCESS);
+                alert("Payment successful!");
+              } else {
+                session.completePayment(ApplePaySession.STATUS_FAILURE);
+                alert("Payment failed.");
+              }
+            });
+        };
 
       session.oncancel = (event) => {
-        console.log("event",event)
+        console.log("event", event)
         console.log('Payment was cancelled by the user.');
       };
       // session.completePayment({ status: ApplePaySession.STATUS_SUCCESS });
@@ -172,7 +154,97 @@ const paymentRequest = {
 
       session.begin();
     }
-  </script>
 
+  </script> -->
+
+
+  <script>
+    // Check if Apple Pay is available
+    if (window.ApplePaySession && ApplePaySession.canMakePayments()) {
+      console.log('Apple Pay is available!');
+      document.getElementById('apple-pay-button').addEventListener('click', startApplePaySession);
+    } else {
+      console.error('Apple Pay is not supported on this device.');
+      document.getElementById('apple-pay-button').style.display = 'none';
+    }
+  
+    async function startApplePaySession() {
+
+var authorization = ""
+    await  fetch("https://api.paybito.com:9443/ApplePay/api/braintree/client-token").then((data)=>data.json())
+      .then((data)=>{
+        authorization = data?.btToken
+      })
+      console.log(authorization,"authorization")
+      // Initialize Braintree Client
+      const clientInstance = await braintree.client.create({
+        authorization: authorization // Replace with your Braintree client token or tokenization key
+      });
+  
+      const applePayInstance = await braintree.applePay.create({
+        client: clientInstance
+      });
+  
+      const paymentRequest = applePayInstance.createPaymentRequest({
+        total: {
+          label: 'Apple Pay Example',
+          amount: '8.99',
+        },
+        currencyCode: 'USD',
+        countryCode: 'US',
+        supportedNetworks: ['visa', 'masterCard', 'amex', 'discover'],
+        merchantCapabilities: ['supports3DS']
+      });
+  
+      const session = new ApplePaySession(3, paymentRequest);
+  
+      session.onvalidatemerchant = async (event) => {
+        try {
+          const merchantSession = await fetch('https://api.paybito.com:9443/ApplePay/api/apple-pay/createPaymentSession', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ validationURL: event.validationURL }),
+          }).then((res) => res.json());
+  
+          session.completeMerchantValidation(merchantSession);
+        } catch (err) {
+          console.error('Merchant validation failed:', err);
+        }
+      };
+  
+      session.onpaymentauthorized = async (event) => {
+        try {
+          const payload = await applePayInstance.tokenize({
+            token: event.payment.token
+          });
+  
+          const response = await fetch('https://api.paybito.com:9443/ApplePay/api/braintree/process-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nonce: payload.nonce ,amount:"'8.99"}),
+          }).then((res) => res.json());
+  
+          if (response.success) {
+            session.completePayment(ApplePaySession.STATUS_SUCCESS);
+            alert('Payment successful!');
+          } else {
+            session.completePayment(ApplePaySession.STATUS_FAILURE);
+            alert('Payment failed.');
+          }
+        } catch (err) {
+          console.error('Payment authorization failed:', err);
+          session.completePayment(ApplePaySession.STATUS_FAILURE);
+        }
+      };
+  
+      session.oncancel = (event) => {
+        console.log('Payment was cancelled by the user:', event);
+      };
+  
+      session.begin();
+    }
+  </script>
+  
 </body>
+
 </html>
