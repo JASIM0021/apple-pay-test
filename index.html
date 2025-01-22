@@ -195,8 +195,8 @@
           label: "Apple Pay Example",
           amount: "8.99",
         },
-        currencyCode: "USD",
-        countryCode: "US",
+        currencyCode: "INR",
+        countryCode: "IN",
         supportedNetworks: ["visa", "masterCard", "amex", "discover"],
         merchantCapabilities: ["supports3DS"],
       });
@@ -224,7 +224,9 @@
       };
   
       session.onpaymentauthorized = async (event) => {
-console.log(event,"event")
+       
+       
+        console.log(event,"event")
 
         try {
           const payload = await applePayInstance.tokenize({
@@ -238,7 +240,7 @@ console.log(event,"event")
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ nonce: payload.nonce, amount: "8.99" }),
+              body: JSON.stringify({ nonce: payload.nonce}),
             }
           ).then((res) => res.json());
   
