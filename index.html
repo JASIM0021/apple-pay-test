@@ -205,7 +205,7 @@
         merchantCapabilities: ["supports3DS"],
       });
   
-      const session = new ApplePaySession(3, paymentRequest);
+      const session = new ApplePaySession(1, paymentRequest);
   
       session.onvalidatemerchant = async (event) => {
         try {
