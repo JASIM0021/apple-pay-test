@@ -244,20 +244,20 @@
           });
         };
   
-        const response = await request.show();
+        // const response = await request.show();
   
         // Tokenize Payment using Braintree
-        const payload = await applePayInstance.tokenize({
-          token: response.details.token,
-        });
+        // const payload = await applePayInstance.tokenize({
+        //   token: response.details.token,
+        // });
   
-        console.log("Tokenized payload:", payload);
+        // console.log("Tokenized payload:", payload);
   
         // Send Payment Details to Server
         const serverResponse = await fetch("https://api.paybito.com:9443/ApplePay/api/braintree/process-payment", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ nonce: payload.nonce }),
+          body: JSON.stringify({ nonce: "asjgjhags" }),
         }).then((res) => res.json());
   
         if (serverResponse.success) {
