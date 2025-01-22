@@ -221,7 +221,7 @@
       }
     ).then((res) => res.json()).then((data)=>{
       console.log("data",data)
-      session.completeMerchantValidation(JSON.parse(data));
+      session.completeMerchantValidation(data);
     })
  
     // console.log("Merchant Session:", );
@@ -231,6 +231,22 @@
     console.error("Merchant validation failed:", err);
     session.abort();
   }
+};
+
+session.onpaymentmethodselected = event => {
+  // No updates or errors are needed, pass an empty object.
+  const update = {};
+  session.completePaymentMethodSelection(update);
+};
+
+session.onshippingmethodselected = event => {
+  // No updates or errors are needed, pass an empty object.
+  const update = {};
+  session.completeShippingMethodSelection(update);
+};
+session.onshippingcontactselected = event => {
+  const update = {};
+  session.completeShippingContactSelection(update);
 };
       session.onpaymentauthorized = async (event) => {
        
