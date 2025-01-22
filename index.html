@@ -264,6 +264,7 @@
       session.oncancel = (event) => {
         console.log("Payment was cancelled by the user:", event);
         const reason = event.sessionError?.code || "User closed the payment modal.";
+        console.error("Cancellation reason:", event?.sessionError?.info || "Unknown reason");
   console.error("Cancellation reason:", reason);
       };
   
