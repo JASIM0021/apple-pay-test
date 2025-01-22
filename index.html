@@ -220,6 +220,7 @@
         // body: JSON.stringify({ validationURL: event.validationURL }),
       }
     ).then((res) => res.json()).then((data)=>{
+      console.log("data",data)
       session.completeMerchantValidation(data);
     })
  
@@ -233,8 +234,8 @@
 };
       session.onpaymentauthorized = async (event) => {
        
-       
-        console.log(event,"event")
+        const payment = event.payment;
+        console.log(event,"event",payment)
 
         try {
           const payload = await applePayInstance.tokenize({
