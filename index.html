@@ -17,6 +17,10 @@
  
     <script src="https://js.braintreegateway.com/web/3.92.0/js/client.min.js"></script>
 <script src="https://js.braintreegateway.com/web/3.92.0/js/apple-pay.min.js"></script>
+<!-- includes the Braintree JS client SDK --> 
+<script src="https://js.braintreegateway.com/web/dropin/1.44.0/js/dropin.min.js"></script> 
+<!-- includes jQuery -->
+<script src="http://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
 
   </script>
 </head>
@@ -158,11 +162,11 @@
   </script> -->
 
 
-  <!-- <script>
-    let applePayInstance; // Keep it available for later use
-    let authorization = ""; // Store the client token
+  <script>
+    let applePayInstance;
+    let authorization = "";
   
-    // Preload Braintree client token and Apple Pay instance
+    // Initialize Braintree
     async function initializeBraintree() {
       try {
         const response = await fetch("https://api.paybito.com:9443/ApplePay/api/braintree/client-token");
@@ -183,87 +187,107 @@
       }
     }
   
-    // Start Apple Pay session on button click
-    function startApplePaySession() {
-      if (!applePayInstance) {
-        alert("Apple Pay is not ready. Please try again.");
+    // Start Apple Pay session using PaymentRequest API
+    async function onApplePayButtonClicked() {
+      if (!PaymentRequest) {
+        alert("PaymentRequest API is not supported on this browser.");
         return;
       }
   
-      const paymentRequest = applePayInstance.createPaymentRequest({
-        total: {
-          label: "Apple Pay Example",
-          amount: "8.99",
-        },
-        currencyCode: "INR",
-        countryCode: "IN",
-        supportedNetworks: ["visa", "masterCard", "amex", "discover"],
-        merchantCapabilities: ["supports3DS"],
-      });
+      try {
+        // Define PaymentMethodData
+        const paymentMethodData = [
+          {
+            supportedMethods: "https://apple.com/apple-pay",
+            data: {
+              version: 3,
+              merchantIdentifier: "merchant.com.paybito", // Replace with your merchant ID
+              merchantCapabilities: ["supports3DS"],
+              supportedNetworks: ["amex", "discover", "masterCard", "visa"],
+              countryCode: "US",
+            },
+          },
+        ];
   
-      const session = new ApplePaySession(3, paymentRequest);
+        // Define PaymentDetails
+        const paymentDetails = {
+          total: {
+            label: "Demo (Card is not charged)",
+            amount: { value: "27.50", currency: "USD" },
+          },
+        };
   
-      session.onvalidatemerchant = async (event) => {
-        try {
-          const merchantSession = await fetch(
-            "https://api.paybito.com:9443/ApplePay/api/apple-pay/createPaymentSession",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              // body: JSON.stringify({ validationURL: event.validationURL }),
-            }
-          ).then((res) => res.json());
-
-
-          console.log(merchantSession,"merchantSession")
+        // Define PaymentOptions
+        const paymentOptions = {
+          requestPayerName: false,
+          requestBillingAddress: false,
+          requestPayerEmail: false,
+          requestPayerPhone: false,
+          requestShipping: false,
+        };
   
-          session.completeMerchantValidation(merchantSession);
-        } catch (err) {
-          console.error("Merchant validation failed:", err);
-        }
-      };
+        // Create PaymentRequest
+        const request = new PaymentRequest(paymentMethodData, paymentDetails, paymentOptions);
   
-      session.onpaymentauthorized = async (event) => {
-       
-       
-        console.log(event,"event")
-
-        try {
-          const payload = await applePayInstance.tokenize({
-            token: event.payment.token,
+        // Merchant Validation
+        request.onmerchantvalidation = (event) => {
+          console.log("Merchant validation triggered");
+          const merchantSessionPromise = validateMerchant(event.validationURL);
+          event.complete(merchantSessionPromise);
+        };
+  
+        // Handle Payment Authorization
+        request.onpaymentmethodchange = (event) => {
+          console.log("Payment method change triggered");
+          event.updateWith({
+            total: paymentDetails.total,
           });
-
-          console.log(payload,"payload")
+        };
   
-          const response = await fetch(
-            "https://api.paybito.com:9443/ApplePay/api/braintree/process-payment",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ nonce: payload.nonce}),
-            }
-          ).then((res) => res.json());
+        const response = await request.show();
   
-          if (response.success) {
-            session.completePayment(ApplePaySession.STATUS_SUCCESS);
-            alert("Payment successful!");
-          } else {
-            session.completePayment(ApplePaySession.STATUS_FAILURE);
-            alert("Payment failed.");
-          }
-        } catch (err) {
-          console.error("Payment authorization failed:", err);
-          session.completePayment(ApplePaySession.STATUS_FAILURE);
+        // Tokenize Payment using Braintree
+        const payload = await applePayInstance.tokenize({
+          token: response.details.token,
+        });
+  
+        console.log("Tokenized payload:", payload);
+  
+        // Send Payment Details to Server
+        const serverResponse = await fetch("https://api.paybito.com:9443/ApplePay/api/braintree/process-payment", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nonce: payload.nonce }),
+        }).then((res) => res.json());
+  
+        if (serverResponse.success) {
+          response.complete("success");
+          alert("Payment successful!");
+        } else {
+          response.complete("fail");
+          alert("Payment failed.");
         }
-      };
+      } catch (error) {
+        console.error("Payment request failed:", error);
+      }
+    }
   
-      session.oncancel = (event) => {
-        console.log("Payment was cancelled by the user:", event);
-        const reason = event.sessionError?.code || "User closed the payment modal.";
-  console.error("Cancellation reason:", reason);
-      };
+    // Validate Merchant
+    async function validateMerchant(validationURL) {
+      try {
+        const response = await fetch("https://api.paybito.com:9443/ApplePay/api/apple-pay/createPaymentSession", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ validationURL }),
+        });
   
-      session.begin();
+        const merchantSession = await response.json();
+        console.log("Merchant validation successful:", merchantSession);
+        return merchantSession;
+      } catch (error) {
+        console.error("Merchant validation failed:", error);
+        throw new Error("Merchant validation failed");
+      }
     }
   
     // Initialize Braintree on page load
@@ -275,62 +299,14 @@
         console.log("Apple Pay is available!");
         document
           .getElementById("apple-pay-button")
-          .addEventListener("click", startApplePaySession);
+          .addEventListener("click", onApplePayButtonClicked);
       } else {
         console.error("Apple Pay is not supported on this device.");
         document.getElementById("apple-pay-button").style.display = "none";
       }
     });
-  </script> -->
+  </script>
   
-<div id="dropin-wrapper">
-  <div id="checkout-message"></div>
-  <div id="dropin-container"></div>
-  <button id="submit-button">Submit payment</button>
-</div>
-<script>
-  var button = document.querySelector('#submit-button');
-
-  const response = await fetch("https://api.paybito.com:9443/ApplePay/api/braintree/client-token");
-        const data = await response.json();
-      let  authorization = data?.btToken;
-
-  braintree.dropin.create({
-    // Insert your tokenization key here
-    authorization: authorization,
-    container: '#dropin-container'
-  }, function (createErr, instance) {
-    button.addEventListener('click', function () {
-      instance.requestPaymentMethod(function (requestPaymentMethodErr, payload) {
-        // When the user clicks on the 'Submit payment' button this code will send the
-        // encrypted payment information in a variable called a payment method nonce
-        $.ajax({
-          type: 'POST',
-          url: 'https://api.paybito.com:9443/ApplePay/api/apple-pay/createPaymentSession',
-          data: {'paymentMethodNonce': payload.nonce}
-        }).done(function(result) {
-          // Tear down the Drop-in UI
-          instance.teardown(function (teardownErr) {
-            if (teardownErr) {
-              console.error('Could not tear down Drop-in UI!');
-            } else {
-              console.info('Drop-in UI has been torn down!');
-              // Remove the 'Submit payment' button
-              $('#submit-button').remove();
-            }
-          });
-
-          if (result.success) {
-            $('#checkout-message').html('<h1>Success</h1><p>Your Drop-in UI is working! Check your <a href="https://sandbox.braintreegateway.com/login">sandbox Control Panel</a> for your test transactions.</p><p>Refresh to try another transaction.</p>');
-          } else {
-            console.log(result);
-            $('#checkout-message').html('<h1>Error</h1><p>Check your console.</p>');
-          }
-        });
-      });
-    });
-  });
-</script>
 
   
 </body>
