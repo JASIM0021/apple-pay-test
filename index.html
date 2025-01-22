@@ -208,7 +208,7 @@
           const merchantSession = await fetch(
             "https://api.paybito.com:9443/ApplePay/api/apple-pay/createPaymentSession",
             {
-              method: "POST",
+              method: "GET",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ validationURL: event.validationURL }),
             }
