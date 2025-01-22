@@ -208,11 +208,14 @@
           const merchantSession = await fetch(
             "https://api.paybito.com:9443/ApplePay/api/apple-pay/createPaymentSession",
             {
-              method: "GET",
+              method: "POST",
               headers: { "Content-Type": "application/json" },
               // body: JSON.stringify({ validationURL: event.validationURL }),
             }
           ).then((res) => res.json());
+
+
+          console.log(merchantSession,"merchantSession")
   
           session.completeMerchantValidation(merchantSession);
         } catch (err) {
@@ -250,6 +253,8 @@
   
       session.oncancel = (event) => {
         console.log("Payment was cancelled by the user:", event);
+        const reason = event.sessionError?.code || "User closed the payment modal.";
+  console.error("Cancellation reason:", reason);
       };
   
       session.begin();
