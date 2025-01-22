@@ -159,91 +159,119 @@
 
 
   <script>
-    // Check if Apple Pay is available
-    if (window.ApplePaySession && ApplePaySession.canMakePayments()) {
-      console.log('Apple Pay is available!');
-      document.getElementById('apple-pay-button').addEventListener('click', startApplePaySession);
-    } else {
-      console.error('Apple Pay is not supported on this device.');
-      document.getElementById('apple-pay-button').style.display = 'none';
+    let applePayInstance; // Keep it available for later use
+    let authorization = ""; // Store the client token
+  
+    // Preload Braintree client token and Apple Pay instance
+    async function initializeBraintree() {
+      try {
+        const response = await fetch("https://api.paybito.com:9443/ApplePay/api/braintree/client-token");
+        const data = await response.json();
+        authorization = data?.btToken;
+  
+        const clientInstance = await braintree.client.create({
+          authorization,
+        });
+  
+        applePayInstance = await braintree.applePay.create({
+          client: clientInstance,
+        });
+  
+        console.log("Braintree Apple Pay initialized");
+      } catch (error) {
+        console.error("Error initializing Braintree:", error);
+      }
     }
   
-    async function startApplePaySession() {
-
-var authorization = ""
-    await  fetch("https://api.paybito.com:9443/ApplePay/api/braintree/client-token").then((data)=>data.json())
-      .then((data)=>{
-        authorization = data?.btToken
-      })
-      console.log(authorization,"authorization")
-      // Initialize Braintree Client
-      const clientInstance = await braintree.client.create({
-        authorization: authorization // Replace with your Braintree client token or tokenization key
-      });
-  
-      const applePayInstance = await braintree.applePay.create({
-        client: clientInstance
-      });
+    // Start Apple Pay session on button click
+    function startApplePaySession() {
+      if (!applePayInstance) {
+        alert("Apple Pay is not ready. Please try again.");
+        return;
+      }
   
       const paymentRequest = applePayInstance.createPaymentRequest({
         total: {
-          label: 'Apple Pay Example',
-          amount: '8.99',
+          label: "Apple Pay Example",
+          amount: "8.99",
         },
-        currencyCode: 'USD',
-        countryCode: 'US',
-        supportedNetworks: ['visa', 'masterCard', 'amex', 'discover'],
-        merchantCapabilities: ['supports3DS']
+        currencyCode: "USD",
+        countryCode: "US",
+        supportedNetworks: ["visa", "masterCard", "amex", "discover"],
+        merchantCapabilities: ["supports3DS"],
       });
   
       const session = new ApplePaySession(3, paymentRequest);
   
       session.onvalidatemerchant = async (event) => {
         try {
-          const merchantSession = await fetch('https://api.paybito.com:9443/ApplePay/api/apple-pay/createPaymentSession', {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ validationURL: event.validationURL }),
-          }).then((res) => res.json());
+          const merchantSession = await fetch(
+            "https://api.paybito.com:9443/ApplePay/api/apple-pay/createPaymentSession",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ validationURL: event.validationURL }),
+            }
+          ).then((res) => res.json());
   
           session.completeMerchantValidation(merchantSession);
         } catch (err) {
-          console.error('Merchant validation failed:', err);
+          console.error("Merchant validation failed:", err);
         }
       };
   
       session.onpaymentauthorized = async (event) => {
         try {
           const payload = await applePayInstance.tokenize({
-            token: event.payment.token
+            token: event.payment.token,
           });
   
-          const response = await fetch('https://api.paybito.com:9443/ApplePay/api/braintree/process-payment', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nonce: payload.nonce ,amount:"'8.99"}),
-          }).then((res) => res.json());
+          const response = await fetch(
+            "https://api.paybito.com:9443/ApplePay/api/braintree/process-payment",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ nonce: payload.nonce, amount: "8.99" }),
+            }
+          ).then((res) => res.json());
   
           if (response.success) {
             session.completePayment(ApplePaySession.STATUS_SUCCESS);
-            alert('Payment successful!');
+            alert("Payment successful!");
           } else {
             session.completePayment(ApplePaySession.STATUS_FAILURE);
-            alert('Payment failed.');
+            alert("Payment failed.");
           }
         } catch (err) {
-          console.error('Payment authorization failed:', err);
+          console.error("Payment authorization failed:", err);
           session.completePayment(ApplePaySession.STATUS_FAILURE);
         }
       };
   
       session.oncancel = (event) => {
-        console.log('Payment was cancelled by the user:', event);
+        console.log("Payment was cancelled by the user:", event);
       };
   
       session.begin();
     }
+  
+    // Initialize Braintree on page load
+    document.addEventListener("DOMContentLoaded", () => {
+      initializeBraintree();
+  
+      // Attach click event to the Apple Pay button
+      if (window.ApplePaySession && ApplePaySession.canMakePayments()) {
+        console.log("Apple Pay is available!");
+        document
+          .getElementById("apple-pay-button")
+          .addEventListener("click", startApplePaySession);
+      } else {
+        console.error("Apple Pay is not supported on this device.");
+        document.getElementById("apple-pay-button").style.display = "none";
+      }
+    });
   </script>
+  
   
 </body>
 
