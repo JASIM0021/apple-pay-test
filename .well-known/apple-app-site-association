@@ -1,0 +1,11 @@
+{
+    "applinks": {
+      "details": [{
+        "appIDs": ["FANSUDC664.com.hashcashconsultants.payBitoTrade"],
+        "components": [{
+          "/": "/content/*",
+          "comment": "Matches paths starting with /content/"
+        }]
+      }]
+    }
+  }
