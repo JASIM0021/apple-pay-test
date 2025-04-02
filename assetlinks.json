@@ -1,8 +1,14 @@
-[{
-    "relation": ["delegate_permission/common.handle_all_urls"],
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
     "target": {
-      "namespace": "com.hashcash.paybito",
+      "namespace": "android_app",
       "package_name": "com.hashcash.paybito",
-      "sha256_cert_fingerprint": "95:E9:77:0F:89:0E:1F:98:B6:40:36:31:BB:28:A6:A9:45:B2:15:CE:BE:E4:A9:C5:D6:1C:F8:55:4B:A0:3F:92"
+      "sha256_cert_fingerprints": [
+        "95:E9:77:0F:89:0E:1F:98:B6:40:36:31:BB:28:A6:A9:45:B2:15:CE:BE:E4:A9:C5:D6:1C:F8:55:4B:A0:3F:92"
+      ]
     }
-  }]
+  }
+]
