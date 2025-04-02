@@ -4,7 +4,7 @@
 
       {
         "appID": "FANSUDC664.com.hashcashconsultants.payBitoTrade",
-        "paths": [ "content"]
+        "paths": [ "*"]
     }
     
     ]
