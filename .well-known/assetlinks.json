@@ -7,7 +7,9 @@
             "namespace": "android_app",
             "package_name": "com.hashcash.paybito",
             "sha256_cert_fingerprints": [
-                "EC:4E:57:6F:C6:51:F6:58:27:07:42:2F:D0:6E:5D:53:08:58:95:33:2F:de:C0:BF:64:22:84:2F:95:B9:18:BF"
+                "95:E9:77:0F:89:0E:1F:98:B6:40:36:31:BB:28:A6:A9:45:B2:15:CE:BE:E4:A9:C5:D6:1C:F8:55:4B:A0:3F:92",
+                "7C:02:37:70:E1:AD:2C:81:7F:25:1D:6E:89:26:3D:A2:0B:EC:90:AB:72:9F:D3:6F:75:13:DB:8C:A2:8B:D6:DE",
+                "EC:4E:57:6F:C6:51:F6:58:27:07:42:2F:D0:6E:5D:53:08:58:95:33:2F:DE:C0:BF:64:22:84:2F:95:B9:18:BF"
             ]
         }
     }
