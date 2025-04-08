@@ -1,16 +1,11 @@
-[
-    {
-        "relation": [
-            "delegate_permission/common.handle_all_urls"
-        ],
-        "target": {
-            "namespace": "android_app",
-            "package_name": "com.hashcash.paybito",
-            "sha256_cert_fingerprints": [
-                "95:E9:77:0F:89:0E:1F:98:B6:40:36:31:BB:28:A6:A9:45:B2:15:CE:BE:E4:A9:C5:D6:1C:F8:55:4B:A0:3F:92",
-                "7C:02:37:70:E1:AD:2C:81:7F:25:1D:6E:89:26:3D:A2:0B:EC:90:AB:72:9F:D3:6F:75:13:DB:8C:A2:8B:D6:DE",
-                "EC:4E:57:6F:C6:51:F6:58:27:07:42:2F:D0:6E:5D:53:08:58:95:33:2F:DE:C0:BF:64:22:84:2F:95:B9:18:BF"
-            ]
-        }
+[{
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.dubxPro.exchange",
+      "sha256_cert_fingerprints": [
+        "2E:61:78:F4:08:F2:CA:24:D1:61:AF:A8:A1:AF:D7:52:4B:B1:5E:F8:D4:1E:00:49:40:86:CA:CD:CD:AC:70:FF",
+        "83:4B:1E:96:E9:F8:37:A6:B3:3B:47:EB:90:4F:F0:BA:8F:DC:44:11:AD:A4:AA:F0:C5:81:51:1F:6C:0F:50:DC"
+      ]
     }
-]
+  }]
