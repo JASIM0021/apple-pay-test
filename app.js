@@ -56,4 +56,11 @@ app.get('/verify/:productId', (req, res) => {
     }
 });
 
+app.get('/',(req,res)=>{
+    res.status(200).json({
+        msg:"Running...",
+        status:true
+    })
+})
+
 app.listen(3000, () => console.log('Server running on port 3000'));
