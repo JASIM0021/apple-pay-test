@@ -4,8 +4,8 @@
     "namespace": "android_app",
     "package_name": "com.mettiIRA.exchange",
     "sha256_cert_fingerprints": [
-      "F5:13:64:6B:B3:4C:67:4F:82:47:44:91:3B:FD:F7:59:5F:8B:27:A6:0B:60:0F:18:CF:B8:C7:EC:8C:E5:C5:BE",
-        "95:E9:77:0F:89:0E:1F:98:B6:40:36:31:BB:28:A6:A9:45:B2:15:CE:BE:E4:A9:C5:D6:1C:F8:55:4B:A0:3F:92"
+      "F5:13:64:6B:B3:4C:67:4F:82:47:44:91:3B:FD:F7:59:5F:8B:27:A6:0B:60:0F:18:CF:B8:C7:EC:8C:E5:C5:BE"
+
     ]
   }
 }]
