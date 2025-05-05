@@ -2,7 +2,7 @@
   "relation": ["delegate_permission/common.handle_all_urls"],
   "target": {
     "namespace": "android_app",
-    "package_name": "com.mettiIRA.exchange",
+    "package_name": "com.google",
     "sha256_cert_fingerprints": [
       "F5:13:64:6B:B3:4C:67:4F:82:47:44:91:3B:FD:F7"
 
