@@ -1,5 +1,22 @@
 const express = require('express');
 const app = express();
+const path = require('path');
+
+
+
+app.use('/.well-known', express.static(path.join(__dirname, '.well-known')));
+
+const fs = require('fs');
+
+app.get('/.well-known', (req, res) => {
+    const dirPath = path.join(__dirname, '.well-known');
+    fs.readdir(dirPath, (err, files) => {
+        if (err) {
+            return res.status(500).json({ error: 'Cannot read .well-known folder' });
+        }
+        res.json({ files });
+    });
+});
 
 app.get('/verify/:productId', (req, res) => {
     const productId = req.params.productId;
